@@ -1,0 +1,2 @@
+Enter 2 sets of points as a list of 4 numbers like so: x1 y1 x2 y2 a
+4

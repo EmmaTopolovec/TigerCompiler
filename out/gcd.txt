@@ -1,0 +1,2 @@
+Enter two positive integers separated by a space:
+GCD(84, 63) = 21

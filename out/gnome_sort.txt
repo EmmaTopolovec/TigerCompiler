@@ -1,0 +1,2 @@
+Please enter a list followed by a letter: 
+1 17 18 69 420 613 99999
