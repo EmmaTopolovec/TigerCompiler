@@ -1,0 +1,60 @@
+let
+	function readint(): int =
+	let
+		var i := 0;
+		var c := getchar();
+     		function isdigit(s : string) : int =
+			 ord(s)>=ord("0") & ord(s)<=ord("9")
+	in
+     		while isdigit(c) do
+		      (i := i*10+ord(c)-ord("0")
+		      ; c := getchar());
+		i
+	end
+
+	function inttoroman(i: int) =
+	while i > 0 do (
+        if i >= 1000 then
+            (print("M");
+            i := i - 1000)
+        else if i >= 900 then
+            (print("CM");
+            i := i - 900)
+        else if i >= 500 then
+            (print("D");
+            i := i - 500)
+        else if i >= 400 then
+            (print("CD");
+            i := i - 400)
+        else if i >= 100 then
+            (print("C");
+            i := i - 100)
+        else if i >= 90 then
+            (print("XC");
+            i := i - 90)
+        else if i >= 50 then
+            (print("L");
+            i := i - 50)
+        else if i >= 40 then
+            (print("XL");
+            i := i - 40)
+        else if i >= 10 then
+            (print("X");
+            i := i - 10)
+        else if i >= 9 then
+            (print("IX");
+            i := i - 9)
+        else if i >= 5 then
+            (print("V");
+            i := i - 5)
+        else if i >= 4 then
+            (print("IV");
+            i := i - 4)
+        else 
+            (print("I");
+            i := i - 1)
+	)
+in
+	print("Enter a positive integer: ");
+	inttoroman(readint())
+end

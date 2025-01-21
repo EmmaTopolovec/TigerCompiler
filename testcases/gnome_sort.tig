@@ -1,0 +1,88 @@
+/*Ho ho ho ha ha, ho ho ho he ha. Hello there, old chum. I’m gnot an gnelf. 
+I’m gnot a gnoblin. I’m a gnome. And you’ve been, GNOMED!*/
+
+let
+    type any = {any : int}
+    type intArray = array of int
+
+    function readint(any: any) : int =
+    let 
+        var buffer := getchar()
+        var i := 0
+        function isdigit(s : string) : int = 
+            ord(buffer)>=ord("0") & ord(buffer)<=ord("9")
+        function skipto() =
+        while buffer=" " | buffer="\n"
+            do buffer := getchar()
+    in skipto();
+        any.any := isdigit(buffer);
+        while isdigit(buffer)
+        do (i := i*10+ord(buffer)-ord("0"); buffer := getchar());
+        i
+    end
+
+    function printint(i: int) =
+        let function f(i:int) = if i>0 
+                then (f(i/10); print(chr(i-i/10*10+ord("0"))))
+        in if i<0 then (print("-"); f(-i))
+            else if i>0 then f(i)
+            else print("0")
+        end
+
+    type list = {first: int, rest: list}
+
+    function readlist() : list =
+        let var any := any{any=0}
+            var i := readint(any)
+        in if any.any
+            then list{first=i,rest=readlist()}
+            else nil
+        end
+
+    function length (l : list) : int =
+    if l = nil then 0 else 1 + length(l.rest)
+
+    function getVal (l: list, index: int, curr: int) : int=
+        if (l = nil) then (-1) else
+            (if index = curr then l.first else getVal(l.rest, index, (curr+1)))
+    
+    function listToArray (l: list) : intArray = 
+        let
+            var size := length(l)
+            var arr := intArray [size] of 0
+        in
+            for i := 0 to size do
+               (arr[i] := getVal(l, i, 0));
+            arr
+        end
+
+    function gnomeSort(l: list) : intArray =
+        let
+            var arr := listToArray(l)
+            var temp := 0
+            var size := length(l)
+            var i := 0
+        in
+            while (i < (size)) do (
+                if(i = 0) then (i := i+1) else (
+                    if (arr[i] >= arr[i-1]) then (i := i+1) else (
+                        if (arr[i] < arr[i-1]) then (
+                            temp := arr[i];
+                            arr[i] := arr[i-1];
+                            arr[i-1] := temp;
+                            i := i-1) 
+                            else (i := i+1)
+                    )
+                )
+            );
+            arr
+        end
+
+    var mssg1 := print("Please enter a list followed by a letter: \n")
+    var list1 := readlist()
+    var size := length(list1)
+    var ret := gnomeSort(list1)
+in
+    for i := 0 to (size-1) do
+        (printint(ret[i]); print(" "))
+end

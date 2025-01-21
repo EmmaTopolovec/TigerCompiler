@@ -1,0 +1,40 @@
+/* BST inorder: this program creates a simple BST then performs an inorder traversal */
+
+let
+    function printint(i: int) =
+        let function f(i:int) = if i>0 
+            then (f(i/10); print(chr(i-i/10*10+ord("0"))))
+        in if i<0 then (print("-"); f(-i))
+            else if i>0 then f(i)
+            else print("0")
+        end
+
+    type node = {key : int, left : node, right : node}
+
+    function insert(root : node, key : int) : node =
+        if root = nil then node {key=key, left=nil, right=nil}
+        else
+            if key < root.key then
+                node {key = root.key, left = insert(root.left, key), right = root.right}
+            else
+                node {key = root.key, left = root.left, right = insert(root.right, key)}
+
+    function inOrder(n : node) =
+        if n <> nil then
+            (inOrder(n.left); printint(n.key); print(" "); inOrder(n.right))
+
+    var root : node := nil
+in
+    root := insert(root, 5);
+    root := insert(root, 3);
+    root := insert(root, 1);
+    root := insert(root, 6);
+    root := insert(root, 8);
+    root := insert(root, 7);
+    root := insert(root, 9);
+    root := insert(root, 2);
+    root := insert(root, 4);
+
+    print("Inorder Traversal: ");
+    inOrder(root)
+end

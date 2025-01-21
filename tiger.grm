@@ -1,0 +1,203 @@
+structure A = Absyn
+
+%%
+
+%term
+    EOF 
+  | ID of string
+  | INT of int | STRING of string 
+  | COMMA | COLON | SEMICOLON | LPAREN | RPAREN | LBRACK | RBRACK 
+  | LBRACE | RBRACE | DOT 
+  | PLUS | MINUS | TIMES | DIVIDE | EQ | NEQ | LT | LE | GT | GE
+  | UNARYMINUS
+  | AND | OR | ASSIGN
+  | ARRAY | IF | THEN | ELSE | WHILE | FOR | TO | DO | LET | IN | END | OF 
+  | BREAK | NIL
+  | FUNCTION | VAR | TYPE 
+
+%nonterm  program of A.exp
+        | exp of A.exp
+        | var of A.var
+        | args of A.exp list
+        | oper1 of A.oper
+        | oper2 of A.oper
+        | oper3 of A.oper
+        | recfields of (A.symbol * A.exp * pos) list
+        | extraexps of (A.exp * pos) list
+        | decs of A.dec list
+        | body of (A.exp * pos) list
+        | dec of A.dec
+        | fundeclist of A.fundec list
+        | fundec of A.fundec
+        | fields of A.field list
+        | field of A.field
+        | typedecs of {name: A.symbol, ty: A.ty, pos: pos} list
+        | ty of A.ty
+
+%pos int
+%verbose
+%start program
+%eop EOF
+%noshift EOF
+
+%name Tiger
+
+%keyword WHILE FOR TO BREAK LET IN END FUNCTION VAR TYPE ARRAY IF THEN ELSE 
+    DO OF NIL
+
+(* In increasing order of precedence *)
+
+(* The first few help solve shift/reduce conflicts *)
+%right WHILE DO (* WhileExp *)
+%right IF THEN ELSE (* IfExp *)
+%left ASSIGN (* AssignExp *)
+%nonassoc ID (* CallExp *)
+%nonassoc LBRACK RBRACK (* VarExp *)
+%right OF (* arrays *)
+
+(* These define operator precedence as stated in the language specification *)
+%left OR
+%left AND
+%nonassoc EQ NEQ GT LT GE LE
+%left PLUS MINUS
+%left TIMES DIVIDE
+%right UNARYMINUS
+%nonassoc LPAREN RPAREN
+
+%value ID ("bogus")
+%value INT (1)
+%value STRING ("")
+
+%%
+
+(* rules are in the approximate order that they appear in absyn.sml *)
+
+(* start *)
+program : exp   (exp)
+
+(* var *)
+exp : var   (A.VarExp(var))
+
+var : ID                      (A.SimpleVar(Symbol.symbol ID, IDleft))
+    | var DOT ID              (A.FieldVar(var, Symbol.symbol ID, varleft))
+    | ID LBRACK exp RBRACK    (A.SubscriptVar(A.SimpleVar(Symbol.symbol ID, IDleft), exp, IDleft))
+    | var LBRACK exp RBRACK   (A.SubscriptVar(var, exp, varleft))
+
+(* NIL, INT, STRING *)
+exp : NIL     (A.NilExp)
+    | INT     (A.IntExp(INT))
+    | STRING  (A.StringExp(STRING, STRINGleft))
+
+(* CallExp and args *)
+    | ID LPAREN RPAREN        (A.CallExp({func=Symbol.symbol ID, args=[], pos=IDleft}))
+    | ID LPAREN args RPAREN   (A.CallExp({func=Symbol.symbol ID, args=args, pos=IDleft}))
+
+args : exp              ([exp])
+     | exp COMMA args   (exp::args)
+
+(* operators *)
+exp : MINUS exp %prec UNARYMINUS    (A.OpExp({left=A.IntExp(0), oper=A.MinusOp, right=exp, pos=MINUSleft}))
+    | exp oper1 exp %prec PLUS      (A.OpExp({left=exp1, oper=oper1, right=exp2, pos=exp1left}))
+    | exp oper2 exp %prec TIMES     (A.OpExp({left=exp1, oper=oper2, right=exp2, pos=exp1left}))
+    | exp oper3 exp %prec EQ        (A.OpExp({left=exp1, oper=oper3, right=exp2, pos=exp1left}))
+
+oper1 : PLUS     (A.PlusOp)
+      | MINUS    (A.MinusOp)
+      
+oper2 : TIMES    (A.TimesOp)
+      | DIVIDE   (A.DivideOp)
+
+oper3 : EQ       (A.EqOp)
+      | NEQ      (A.NeqOp)
+      | LT       (A.LtOp)
+      | LE       (A.LeOp)
+      | GT       (A.GtOp)
+      | GE       (A.GeOp)
+
+(* records and recfields *)
+exp : ID LBRACE RBRACE              (A.RecordExp({fields=[], typ=Symbol.symbol ID, pos=IDleft}))
+    | ID LBRACE recfields RBRACE    (A.RecordExp({fields=recfields, typ=Symbol.symbol ID, pos=IDleft}))
+
+recfields : ID EQ exp                ([(Symbol.symbol ID, exp, IDleft)])
+       | ID EQ exp COMMA recfields   ((Symbol.symbol ID, exp, IDleft) :: recfields)
+
+(* exp sequence *)
+exp : LPAREN RPAREN             (A.SeqExp([]))
+    | LPAREN extraexps RPAREN   (A.SeqExp(extraexps))
+
+extraexps : exp                         ([(exp, expleft)])
+          | exp SEMICOLON extraexps     ((exp, expleft)::extraexps)
+
+(* ASSIGN *)
+exp : var ASSIGN exp    (A.AssignExp({var=var, exp=exp, pos=varleft}))
+
+(* if/else and & | *)
+    | IF exp THEN exp             (A.IfExp({test=exp1, then'=exp2, else'=NONE, pos=IFleft}))
+    | IF exp THEN exp ELSE exp    (A.IfExp({test=exp1, then'=exp2, else'=SOME exp3, pos=IFleft}))
+    | exp AND exp                 (A.IfExp({test=exp1, then'=exp2, else'=SOME(A.IntExp(0)), pos=exp1left}))
+    | exp OR exp                  (A.IfExp({test=exp1, then'=A.IntExp(1), else'=SOME exp2, pos=exp1left}))
+
+(* loops *)
+    | WHILE exp DO exp                  (A.WhileExp({test=exp1, body=exp2, pos=WHILEleft}))
+    | FOR ID ASSIGN exp TO exp DO exp   (A.ForExp({var=Symbol.symbol ID, escape=(ref false), lo=exp1, hi=exp2, body=exp3, pos=FORleft}))
+    | BREAK                             (A.BreakExp(BREAKleft))
+
+(* let statement *)
+    | LET IN body END           (A.LetExp({decs=[], body=A.SeqExp(body), pos=LETleft}))
+    | LET decs IN body END      (A.LetExp({decs=decs, body=A.SeqExp(body), pos=LETleft}))
+    | LET IN END                (A.LetExp({decs=[], body=A.SeqExp([]), pos=LETleft}))
+    | LET decs IN END           (A.LetExp({decs=decs, body=A.SeqExp([]), pos=LETleft}))
+
+decs : dec        ([dec])
+     | dec decs   (dec :: decs)
+
+body : exp                  ([(exp, expleft)])
+     | exp SEMICOLON body   ((exp, expleft)::body)
+
+(* let - FunctionDec *)
+dec : fundeclist   (A.FunctionDec(fundeclist))
+
+(* ==Start shift/reduce conflict==
+The following rules produce a shift/reduce conflict. This is not
+harmful, as the parser will always choose to reduce. We always
+want to fully reduce a function declaration before shifting
+another FUNCTION keyword in our function declaration list.
+ *)
+fundeclist : fundec fundeclist   (fundec :: fundeclist)
+           | fundec              ([fundec])
+(* ==End shift/reduce conflict== *)
+
+fundec : FUNCTION ID LPAREN RPAREN EQ exp                   ({name=Symbol.symbol ID, params=[], result=NONE, body=exp, pos=FUNCTIONleft})
+       | FUNCTION ID LPAREN RPAREN COLON ID EQ exp          ({name=Symbol.symbol ID1, params=[], result=SOME(Symbol.symbol ID2, ID2left), body=exp, pos=FUNCTIONleft})
+       | FUNCTION ID LPAREN fields RPAREN EQ exp            ({name=Symbol.symbol ID, params=fields, result=NONE, body=exp, pos=FUNCTIONleft})
+       | FUNCTION ID LPAREN fields RPAREN COLON ID EQ exp   ({name=Symbol.symbol ID1, params=fields, result=SOME(Symbol.symbol ID2, ID2left), body=exp, pos=FUNCTIONleft})
+
+fields : field COMMA fields   (field :: fields)
+       | field                ([field])
+       |                      ([])
+
+field : ID COLON ID   ({name=Symbol.symbol ID1, escape=(ref false), typ=Symbol.symbol ID2, pos=ID1left})
+
+(* let - VarDec *)
+dec : VAR ID ASSIGN exp             (A.VarDec({name=Symbol.symbol ID, escape=(ref false), typ=NONE, init=exp, pos=VARleft}))
+    | VAR ID COLON ID ASSIGN exp    (A.VarDec({name=Symbol.symbol ID1, escape=(ref false), typ=SOME (Symbol.symbol ID2, ID2left), init=exp, pos=VARleft}))
+
+(* let - TypeDec *)
+dec : typedecs    (A.TypeDec(typedecs))
+
+(* ==Start shift/reduce conflict==
+The following rules produce a shift/reduce conflict. This is not
+harmful, as the parser will always choose to reduce. We always
+want to fully reduce a type declaration before shifting
+another TYPE keyword in our type declaration list.
+ *)
+typedecs : TYPE ID EQ ty            ([{name=Symbol.symbol ID, ty=ty, pos=TYPEleft}])
+         | TYPE ID EQ ty typedecs   ({name=Symbol.symbol ID, ty=ty, pos=TYPEleft} :: typedecs)
+(* ==End shift/reduce conflict== *)
+
+ty : ID                     (A.NameTy(Symbol.symbol ID, IDleft))
+   | LBRACE fields RBRACE   (A.RecordTy(fields))
+   | ARRAY OF ID            (A.ArrayTy(Symbol.symbol ID, ARRAYleft))
+
+(* arrays *)
+exp : ID LBRACK exp RBRACK OF exp       (A.ArrayExp({typ=Symbol.symbol ID, size=exp1, init=exp2, pos=IDleft}))

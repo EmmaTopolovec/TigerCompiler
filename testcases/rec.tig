@@ -1,0 +1,13 @@
+let
+
+    function rec(x : int, mes : string) = if x = 0 then print(mes) else rec(0, mes)
+
+    function rec2(mes : string) =
+        let
+            function helper(x : int) = if x = 0 then print(mes) else helper(0)
+        in
+        helper(1)
+        end
+in
+rec(1, "REC!"); print("\n"); rec2("REC ALSO")
+end

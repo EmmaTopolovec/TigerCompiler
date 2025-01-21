@@ -1,0 +1,94 @@
+/* This test performs selection sort on a given input.
+  Sorting algorithms are always important, and the selection
+  sort algorithm is typically faster and preferrable to bubblesort,
+  so it is an improvement. There are also times when it is preferrable
+  over merge sort, provided either the size of input is small or the
+  amount of available memory is limited
+*/
+
+let 
+
+ type any = {any : int}
+ var buffer := getchar()
+
+function readint(any: any) : int =
+ let var i := 0
+     function isdigit(s : string) : int = 
+		  ord(buffer)>=ord("0") & ord(buffer)<=ord("9")
+     function skipto() =
+       while buffer=" " | buffer="\n"
+         do buffer := getchar()
+  in skipto();
+     any.any := isdigit(buffer);
+     while isdigit(buffer)
+       do (i := i*10+ord(buffer)-ord("0"); buffer := getchar());
+     i
+ end
+
+ type list = {first: int, rest: list}
+
+ type alist = array of int
+
+ function readlist() : list =
+    let var any := any{any=0}
+        var i := readint(any)
+     in if any.any
+         then list{first=i,rest=readlist()}
+         else nil
+    end
+
+ function printint(i: int) =
+  let function f(i:int) = if i>0 
+	     then (f(i/10); print(chr(i-i/10*10+ord("0"))))
+   in if i<0 then (print("-"); f(-i))
+      else if i>0 then f(i)
+      else print("0")
+  end
+
+ function printlist(l: list) =
+   if l=nil then print("\n")
+   else (printint(l.first); print(" "); printlist(l.rest))
+
+ function printarray(l: alist, n : int) =
+   for i := 0 to (n - 1) do (printint(l[i]); print(" "))
+
+ function length (l : list) : int =
+    if l = nil then 0 else 1 + length(l.rest)
+
+ function toArray (l : list) : alist =
+   let var a : alist := alist[length(l)] of 0
+       var len := length(l)
+   in
+   for i := 0 to len - 1 do
+    (a[i] := l.first;
+    l := l.rest);
+   a
+   end
+   
+ 
+ function selection(a : alist, len : int) =
+    for i:= 0 to len - 2 do
+      let 
+        var min := i 
+      in
+        ((for j := (i+1) to len - 1 do
+          if (a[j] < a[min]) then min := j);
+          (if (min <> i) then 
+            let
+              var t := a[min]
+            in
+              (a[min] := a[i];
+              a[i] := t)
+            end))
+      end
+  
+
+   var list : list := readlist()
+   var len := length(list)
+   var alist := toArray(list)
+
+  /* BODY OF MAIN PROGRAM */
+ in
+ selection(alist, len);
+ printarray(alist, len)
+end

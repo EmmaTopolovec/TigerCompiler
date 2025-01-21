@@ -1,0 +1,70 @@
+/* HashTable: this program is a simple implementation of a hash table */
+
+let
+    function printint(i: int) =
+        let function f(i:int) = if i>0 
+            then (f(i/10); print(chr(i-i/10*10+ord("0"))))
+        in if i<0 then (print("-"); f(-i))
+            else if i>0 then f(i)
+            else print("0")
+        end
+
+    type entry = {key : int, val : int, next: entry}
+    type entries = array of entry
+    type HashTable = {size : int, buckets : entries }
+
+    function hashTable(size : int) : HashTable =
+        HashTable {size=size, buckets=entries[size] of nil}
+
+    function mod(a : int, b : int) : int =
+        let
+            var result := a - (a / b) * b
+        in
+            if result < 0 then
+                result + b
+            else
+                result
+        end
+
+    function insert(t : HashTable, key : int, val : int) =
+        let
+            var i := mod(key, t.size)
+            var newEntry := entry {key=key, val=val, next=nil}
+        in
+            newEntry.next := t.buckets[i];
+            t.buckets[i] := newEntry
+        end
+
+    function lookup(t : HashTable, key : int) : int =
+        let
+            var i := mod(key, t.size)
+            var curr := t.buckets[i]
+            var return := -1
+        in
+            while curr <> nil do
+                if curr.key = key then
+                    (return := curr.val;
+                    curr := nil)
+                else
+                    curr := curr.next;
+            return
+        end
+
+    var table := hashTable(10)
+in
+    insert(table, 33, 10);
+    insert(table, 73, 20);
+    insert(table, 42, 30);
+
+    print("33: ");
+    printint(lookup(table, 33));
+
+    print("\n73: ");
+    printint(lookup(table, 73));
+
+    print("\n42: ");
+    printint(lookup(table, 42));
+
+    print("\n13: ");
+    printint(lookup(table, 13))
+end

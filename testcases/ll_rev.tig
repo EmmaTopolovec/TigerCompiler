@@ -1,0 +1,44 @@
+/* Linked List Reversal: this program generates a singly linked list, then reverses it */
+
+let
+    function printint(i: int) =
+        let function f(i:int) = if i>0 
+            then (f(i/10); print(chr(i-i/10*10+ord("0"))))
+        in if i<0 then (print("-"); f(-i))
+            else if i>0 then f(i)
+            else print("0")
+        end
+
+    type LLNode = {val : int, next: LLNode}
+
+    function printLL(head : LLNode) = 
+        if head <> nil then
+            (printint(head.val); print(" "); printLL(head.next))
+
+    function reverse(head : LLNode) : LLNode =
+        let
+            var prev : LLNode := nil
+            var curr := head
+            var next : LLNode := nil
+        in
+            while curr <> nil do
+                (next := curr.next;
+                curr.next := prev;
+                prev := curr;
+                curr := next);
+            prev
+        end
+
+    var list := LLNode{     val=1,
+                next=LLNode{val=2,
+                next=LLNode{val=3,
+                next=       nil}}}
+in
+    print("List: ");
+    printLL(list);
+
+    list := reverse(list);
+  
+    print("\nReversed: ");
+    printLL(list)
+end

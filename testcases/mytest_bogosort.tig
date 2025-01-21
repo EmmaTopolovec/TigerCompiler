@@ -1,0 +1,71 @@
+/* Implementation of Bogo Sort
+Step 1: Randomize array (using psuedo-random numbers)
+Step 2: If array is sorted, return it. Else, go back to step 1. ^_^ */
+
+let
+    function printint(i: int) =
+        let function f(i:int) = if i>0 
+            then (f(i/10); print(chr(i-i/10*10+ord("0"))))
+        in if i<0 then (print("-"); f(-i))
+            else if i>0 then f(i)
+            else print("0")
+        end
+
+    type intArr = array of int
+
+    function printArray(a : intArr, n : int) =
+        (for i := 0 to n-1 do (
+            printint(a[i]);
+            print(" ")
+        );
+        print("\n"))
+
+    function mod(a : int, b : int) : int =
+        let
+            var result := a - (a / b) * b
+        in
+            if result < 0 then
+                result + b
+            else
+                result
+        end
+
+    function bogoSort(arr : intArr, n : int) : intArr =
+        let
+            var seed := 12
+            function random() : int = (seed := seed * 75 / 9; mod(seed, 2))
+
+            function isNotSorted(arr2 : intArr) : int = /* check if arry is still not sorted */
+                let
+                    var r := 0
+                in
+                    for i := 0 to n-2 do if arr2[i] > arr2[i + 1] then r := 1;
+                    r
+                end
+        in
+            while (isNotSorted(arr)) do (
+                printArray(arr, n);
+                for i := 0 to n-2 do /* randomly swap elements */
+                    if random() then
+                        let
+                            var temp : int := arr[i]
+                        in
+                            arr[i] := arr[i+1];
+                            arr[i+1] := temp
+                        end
+            );
+            arr
+        end
+
+    var n : int := 4
+    var a : intArr := intArr[n] of 0
+in
+    a[0] := 1;
+    a[1] := 3;
+    a[2] := 2;
+    a[3] := 4;
+
+    a := bogoSort(a, n);
+    print("SORTED: ");
+    printArray(a, n)
+end

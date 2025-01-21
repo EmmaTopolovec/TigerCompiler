@@ -1,0 +1,59 @@
+/* Implementation of Cocktail Sort
+Like bubble sort, but each pass bounces between left-to-right and right-to-left.
+Different than bubble sort, which is typically only left-to-right passes */
+
+let
+    function printint(i: int) =
+        let function f(i:int) = if i>0 
+            then (f(i/10); print(chr(i-i/10*10+ord("0"))))
+        in if i<0 then (print("-"); f(-i))
+            else if i>0 then f(i)
+            else print("0")
+        end
+
+    type intArr = array of int
+
+    function cocktailSort(arr : intArr, n : int) : intArr =
+        let
+            var swapped : int := 1 /* bool */
+            var startIndex : int := 0
+            var endIndex : int := n - 1
+            var tmp : int := 0
+        in
+            while (swapped & (startIndex < endIndex)) do (
+                swapped := 0;
+                for i := startIndex to endIndex - 1 do
+                    if arr[i] > arr[i + 1] then
+                        (tmp := arr[i];
+                        arr[i] := arr[i + 1];
+                        arr[i + 1] := tmp;
+                        swapped := 1);
+                endIndex := endIndex - 1;
+                for j := startIndex + 1 to endIndex do
+                    let
+                        var i := n - j - 1 /* Simulates looping downwards from endIndex to startIndex */
+                    in
+                        if arr[i - 1] > arr[i] then
+                            (tmp := arr[i];
+                            arr[i] := arr[i - 1];
+                            arr[i - 1] := tmp;
+                            swapped := 1)
+                    end;
+                startIndex := startIndex + 1
+            );
+            arr
+        end
+
+    var a : intArr := intArr[5] of 0
+in
+    a[0] := 4;
+    a[1] := 5;
+    a[2] := 1;
+    a[3] := 3;
+    a[4] := 2;
+    a := cocktailSort(a, 5);
+    for i := 0 to 4 do (
+        printint(a[i]);
+        print(" ")
+    )
+end

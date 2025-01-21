@@ -1,0 +1,2 @@
+for i := 1 to 10 do
+    (let function f() = if i = 1 then print("IS ONE\n") else print ("IS NOT ONE\n") in f() end)

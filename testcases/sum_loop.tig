@@ -1,0 +1,43 @@
+/* this program finds the sum of numbers 1 to N. */
+
+let
+    /* reading in and writing out ints */
+    type any = {any : int}
+    var buffer := getchar()
+
+    function printint(i: int) =
+    let function f(i:int) = if i>0 
+            then (f(i/10); print(chr(i-i/10*10+ord("0"))))
+    in if i<0 then (print("-"); f(-i))
+        else if i>0 then f(i)
+        else print("0")
+    end
+
+    function readint(any: any) : int =
+    let var i := 0
+        function isdigit(s : string) : int = 
+            ord(buffer)>=ord("0") & ord(buffer)<=ord("9")
+        function skipto() =
+        while buffer=" " | buffer="\n"
+            do buffer := getchar()
+    in skipto();
+        any.any := isdigit(buffer);
+        while isdigit(buffer)
+        do (i := i*10+ord(buffer)-ord("0"); buffer := getchar());
+        i
+    end
+
+    function sumUpTo(n: int) : int =
+        let var i := 1 var t := 0 in
+        while i <= n do (t := t + i; i := i + 1); t
+        end
+in
+    let
+        var any := any{any=0}
+        var pr := print("Enter a number!\n")
+        var numberToSum := readint(any)
+        var sum := sumUpTo(numberToSum)
+    in
+        printint(sum)
+    end
+end

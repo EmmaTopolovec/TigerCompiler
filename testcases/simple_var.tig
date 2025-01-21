@@ -1,0 +1,6 @@
+let
+    var x := 5
+    var y := 7
+in
+if x > y then print("x > y") else print("x <= y")
+end

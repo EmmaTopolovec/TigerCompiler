@@ -1,0 +1,37 @@
+/* primes.tig
+ * Generates prime numbers up to 1000 using the Sieve of Eratosthenes
+ */
+
+let
+    type sieve_t = array of int
+
+    function printint(i: int) =
+    let
+        function f(i:int) =
+        if i>0
+        then (f(i/10); print(chr(i-i/10*10+ord("0"))))
+    in
+        if i<0
+        then (print("-"); f(-i))
+        else if i>0
+             then f(i)
+             else print("0")
+    end
+
+    function primes(n: int) =
+    let
+        var sieve := sieve_t [n + 1] of 0
+    in
+        for i := 2 to n do
+            if sieve[i] = 0
+            then (printint(i)
+                 ; print("\n");
+            let
+                var j := i
+            in
+                while j < n do (sieve[j] := 1; j := j + i)
+            end)
+    end
+in
+    primes(1000)
+end

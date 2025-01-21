@@ -1,0 +1,59 @@
+/*prints out the first n+1 (starting at 0) Bell numbers, which are the number of ways to partition a set with n elements*/
+let
+    function printint(i: int) =
+        let function f(i:int) = if i>0 
+                then (f(i/10); print(chr(i-i/10*10+ord("0"))))
+        in if i<0 then (print("-"); f(-i))
+            else if i>0 then f(i)
+            else print("0")
+        end
+    
+    type int_arr = array of int
+    type dbl_arr = array of int_arr
+
+    function print_dbl_array(my_arr: dbl_arr, size: int) = 
+        for i := 0 to size-1 do (
+            for j := 0 to size-1 do (
+                printint(my_arr[i][j]); print(" ")
+            )
+            print("\n");
+        )
+
+    function bell(n: int) : int = 
+        let
+            var arrs := int_arr[n+1] of 0
+            var my_arr := dbl_arr[n+1] of (arrs)
+            var res := 0
+
+            /*NECESSARY FOR DEDUPLICATING THE 1D ARRAYS OF my_arr*/
+            for i := 0 to n do (
+                let
+                    var arr_i := int_arr[n+1] of 0
+                in
+                    my_arr[i] := arr_i
+                end 
+            )
+        in
+            for i := 0 to n do (
+                for j := 0 to n do (
+                    if (j > i) then (my_arr[i][j] := 0)
+                    else if (i = j) then my_arr[i][j] := 1
+                    else if ((i = 0) | (j = 0)) then my_arr[i][j] := 0
+                    else (
+                        my_arr[i][j] := j*my_arr[i-1][j] + my_arr[i-1][j-1]
+                    )
+
+                )
+            );
+            for i := 0 to n do (
+                res := res + my_arr[n][i]
+            ); /*print_dbl_array(my_arr,n+1);*/
+            res
+        end
+
+    var size := 10
+in
+    for i := 0 to size do (
+        printint(bell(i)); print("\n")
+    )
+end

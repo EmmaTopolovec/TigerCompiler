@@ -1,0 +1,14 @@
+let
+    type alist = array of int
+    type aalist = array of alist
+
+    /* Creates an aalist.  Each element of the aalist is a reference to the same alist. */
+    var x := aalist[10] of (alist[5] of 0)
+in
+if x[1][2] = 0 then print("x[1][2] WAS 0\n") else print("x[1][2] WAS NOT 0\n");
+/* Because all alists are the same, x[4][2] is the same memory location as x[1][2]. */
+x[4][2] := 10;
+if x[1][2] = 10 then print("x[1][2] WAS 10\n") else print("x[1][2] WAS NOT 10\n");
+x[1][4] := 20;
+if x[1][2] = 10 then print("x[1][2] WAS 10\n") else print("x[1][2] WAS NOT 10\n")
+end

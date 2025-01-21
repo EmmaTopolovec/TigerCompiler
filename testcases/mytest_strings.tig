@@ -1,0 +1,34 @@
+/* String comparison of single character strings
+Also tests & operator, var declarations, and not()
+NOTE: requires string lexiographic ordering */
+let
+    var a := "a"
+    var b := "b"
+    var c := "c"
+in
+    if 
+        a = a &
+        b <= b &
+        c >= c &
+        a < b &
+        a < c &
+        a <= b &
+        a <= c &
+        c > a &
+        c > b &
+        c >= a &
+        c >= b &
+        a <> b &
+        b <> c &
+        a <> c &
+        not(a = b) &
+        not(a <> a) &
+        not(a > a) &
+        not(a < a) &
+        not(a > b) &
+        not(a >= c) &
+        not(c < b) &
+        not(c <= a)
+
+    then print("PASS\n")
+end

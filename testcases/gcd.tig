@@ -1,0 +1,56 @@
+/* GCD: this program reads two positive ints separated by a space,
+        then returns the GCD (greatest common divisor)
+        between the two numbers */
+          
+let
+
+    type any = {any : int}
+    var buffer := (print("Enter two positive integers separated by a space:\n"); getchar())
+
+    function readint(any: any) : int =
+        let var i := 0
+            function isdigit(s : string) : int = 
+                ord(buffer)>=ord("0") & ord(buffer)<=ord("9")
+            function skipto() =
+            while buffer=" " | buffer="\n"
+                do buffer := getchar()
+        in skipto();
+            any.any := isdigit(buffer);
+            while isdigit(buffer)
+            do (i := i*10+ord(buffer)-ord("0"); buffer := getchar());
+            i
+        end
+
+    function printint(i : int) =
+        let
+            function f(i:int) =
+            if i>0 then (f(i/10); print(chr(i-i/10*10+ord("0"))))
+        in
+            if i<0 then (print("-"); f(-i))
+            else if i>0 then f(i)
+            else print("0")
+        end
+
+    function gcd(a: int, b: int): int =
+        (while b <> 0 do
+            let
+                var temp : int := b
+            in
+                b := a - (a / b) * b;
+                a := temp
+            end;
+        a)
+
+    var num1 := any {any=0}
+    var num2 := any {any=0}
+in
+    num1.any := readint(num1);
+    num2.any := readint(num2);
+    print("GCD(");
+    printint(num1.any);
+    print(", ");
+    printint(num2.any);
+    print(") = ");
+    printint(gcd(num1.any, num2.any));
+    print("\n")
+end

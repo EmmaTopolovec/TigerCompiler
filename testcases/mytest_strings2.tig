@@ -1,0 +1,60 @@
+/* String comparison of multiple character strings
+NOTE: requires string lexiographic ordering */
+
+let
+    var fail := 0
+    var pass := 0
+in
+    /* Empty string */
+    if "" > "" then fail := fail + 1 else pass := pass + 1;
+    if not("" >= "") then fail := fail + 1 else pass := pass + 1;
+    if "" < "" then fail := fail + 1 else pass := pass + 1;
+    if not("" <= "") then fail := fail + 1 else pass := pass + 1;
+    if not("" = "") then fail := fail + 1 else pass := pass + 1;
+    if "" <> "" then fail := fail + 1 else pass := pass + 1;
+    
+    /* Single character */
+    if "a" > "a" then fail := fail + 1 else pass := pass + 1;
+    if not("a" >= "a") then fail := fail + 1 else pass := pass + 1;
+    if "a" < "a" then fail := fail + 1 else pass := pass + 1;
+    if not("a" <= "a") then fail := fail + 1 else pass := pass + 1;
+    if not("a" = "a") then fail := fail + 1 else pass := pass + 1;
+    if "a" <> "a" then fail := fail + 1 else pass := pass + 1;
+    if "a" > "b" then fail := fail + 1 else pass := pass + 1;
+    if "a" >= "b" then fail := fail + 1 else pass := pass + 1;
+    if not("a" < "b") then fail := fail + 1 else pass := pass + 1;
+    if not("a" <= "b") then fail := fail + 1 else pass := pass + 1;
+    if "a" = "b" then fail := fail + 1 else pass := pass + 1;
+    if not("a" <> "b") then fail := fail + 1 else pass := pass + 1;
+    
+    /* Multiple characters */
+    if "abc" > "abc" then fail := fail + 1 else pass := pass + 1;
+    if not("abc" >= "abc") then fail := fail + 1 else pass := pass + 1;
+    if "abc" < "abc" then fail := fail + 1 else pass := pass + 1;
+    if not("abc" <= "abc") then fail := fail + 1 else pass := pass + 1;
+    if not("abc" = "abc") then fail := fail + 1 else pass := pass + 1;
+    if "abc" <> "abc" then fail := fail + 1 else pass := pass + 1;
+    if "abc" > "abd" then fail := fail + 1 else pass := pass + 1;
+    if "abc" >= "abd" then fail := fail + 1 else pass := pass + 1;
+    if not("abc" < "abd") then fail := fail + 1 else pass := pass + 1;
+    if not("abc" <= "abd") then fail := fail + 1 else pass := pass + 1;
+    if "abc" = "abd" then fail := fail + 1 else pass := pass + 1;
+    if not("abc" <> "abd") then fail := fail + 1 else pass := pass + 1;
+    
+    /* Different lengths */
+    if not("ab" > "a") then fail := fail + 1 else pass := pass + 1;
+    if not("ab" >= "a") then fail := fail + 1 else pass := pass + 1;
+    if "ab" < "a" then fail := fail + 1 else pass := pass + 1;
+    if "ab" <= "a" then fail := fail + 1 else pass := pass + 1;
+    if "ab" = "a" then fail := fail + 1 else pass := pass + 1;
+    if not("ab" <> "a") then fail := fail + 1 else pass := pass + 1;
+    if "a" > "ab" then fail := fail + 1 else pass := pass + 1;
+    if "a" >= "ab" then fail := fail + 1 else pass := pass + 1;
+    if not("a" < "ab") then fail := fail + 1 else pass := pass + 1;
+    if not("a" <= "ab") then fail := fail + 1 else pass := pass + 1;
+    if "a" = "ab" then fail := fail + 1 else pass := pass + 1;
+    if not("a" <> "ab") then fail := fail + 1 else pass := pass + 1;
+
+    if fail = 0 & pass = 42 then print("PASS\n") else print("FAIL\n")
+    
+end

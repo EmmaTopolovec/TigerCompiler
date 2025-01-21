@@ -1,0 +1,49 @@
+/*attempts to determine if a number enters the 3x+1 cycle. stops trying after 'limit' iterations. */
+let
+    /* reading in and writing out ints */
+    type any = {any : int}
+    var buffer := getchar()
+
+    function readint(any: any) : int =
+    let var i := 0
+        function isdigit(s : string) : int = 
+            ord(buffer)>=ord("0") & ord(buffer)<=ord("9")
+        function skipto() =
+        while buffer=" " | buffer="\n"
+            do buffer := getchar()
+    in skipto();
+        any.any := isdigit(buffer);
+        while isdigit(buffer)
+        do (i := i*10+ord(buffer)-ord("0"); buffer := getchar());
+        i
+    end
+
+    function printint(i: int) =
+        let function f(i:int) = if i>0 
+                then (f(i/10); print(chr(i-i/10*10+ord("0"))))
+        in if i<0 then (print("-"); f(-i))
+            else if i>0 then f(i)
+            else print("0")
+        end
+
+    function look_for_cycle(n: int, iters: int, limit: int) : int = 
+        if (iters = limit) then -1
+        else if (n = 1) then (printint(n); print("\n"); iters+1)
+        else (
+            let
+                var divtwo := n/2
+                var multwo := divtwo * 2
+                var x := (printint(n); print("\n"))
+            in
+                if (n = multwo) then look_for_cycle(n/2, iters+1, limit)
+                else look_for_cycle(3*n+1, iters+1, limit)
+            end
+        )
+
+    var any := any{any=0}
+    var number := readint(any)
+    var limit := 200
+    var result := look_for_cycle(number, 0, limit)
+in
+    if result <> -1 then (print("number converges to 1 in "); printint(result); print(" cycles\n")) else ("number does not converge to 1 within 100 iterations\n")
+end

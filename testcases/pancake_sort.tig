@@ -1,0 +1,125 @@
+/*
+    Pancake Sort: You have a stack of pancakes and want to order them smallest on top.
+    Your only option is to insert a "spatula" and flip everything above it.
+
+    When given an array of ints terminated with a char, this program will output all of the flips necesary to sort the stack.
+*/
+
+let
+
+ type any = {any : int}
+ var buffer := getchar()
+
+function readint(any: any) : int =
+ let var i := 0
+     function isdigit(s : string) : int =
+		  ord(buffer)>=ord("0") & ord(buffer)<=ord("9")
+     function skipto() =
+       while buffer=" " | buffer="\n"
+         do buffer := getchar()
+  in skipto();
+     any.any := isdigit(buffer);
+     while isdigit(buffer)
+       do (i := i*10+ord(buffer)-ord("0"); buffer := getchar());
+     i
+ end
+
+ type list = {first: int, rest: list}
+
+ type alist = array of int
+
+ function readlist() : list =
+    let var any := any{any=0}
+        var i := readint(any)
+     in if any.any
+         then list{first=i,rest=readlist()}
+         else nil
+    end
+
+ function printint(i: int) =
+  let function f(i:int) = if i>0
+	     then (f(i/10); print(chr(i-i/10*10+ord("0"))))
+   in if i<0 then (print("-"); f(-i))
+      else if i>0 then f(i)
+      else print("0")
+  end
+
+ function printlist(l: list) =
+   if l=nil then print("\n")
+   else (printint(l.first); print(" "); printlist(l.rest))
+
+ function printarray(l: alist, n : int) =
+   for i := 0 to (n - 1) do (printint(l[i]); for i := 1 to l[i] do print(">"); print("\n"))
+
+ function length (l : list) : int =
+    if l = nil then 0 else 1 + length(l.rest)
+
+ function toArray (l : list) : alist =
+   let var a : alist := alist[length(l)] of 0
+       var len := length(l)
+   in
+   for i := 0 to len - 1 do
+    (a[i] := l.first;
+    l := l.rest);
+   a
+   end
+
+ function flip(a : alist, i : int) =
+    let
+        var temp := 0
+        var start := 0
+    in
+        while start < i do (
+            temp := a[start];
+            a[start] := a[i];
+            a[i] := temp;
+            start := start +1;
+            i := i - 1
+            )
+    end
+
+function findMax (a : alist, n : int) : int =
+    let
+        var max := 0
+    in
+        (for i := 0 to n - 1 do (
+                if a[i] > a[max] then max := i
+            );
+        max)
+    end
+
+ function pancake(a : alist, len : int) =
+   let
+        var size := len
+   in
+        while size > 1 do (
+                let
+                    var max := findMax(a, size)
+                in
+                    (if max <> (size - 1) then (
+                        flip(a, max);
+                        print("Flip: \n");
+                        printarray(a, len);
+                        print("\n");
+                        flip(a,size - 1);
+                        print("Flip: \n");
+                        printarray(a, len);
+                        print("\n");
+                        print("\n")
+                        );
+                    size := size -1)
+                end
+            )
+   end
+
+
+   var list : list := readlist()
+   var len := length(list)
+   var alist := toArray(list)
+
+  /* BODY OF MAIN PROGRAM */
+ in
+ pancake(alist, len);
+ print("Output: \n");
+ printarray(alist, len)
+end

@@ -1,0 +1,63 @@
+/*
+    This makes a binary tree and preforms dfs with some target.
+    It will pretty print the tree, then put an aesterisk with the found value if found.
+
+    Provide the target as input.
+*/
+
+let
+    type any = {any : int}
+    var buffer := getchar()
+
+    function readint(any: any) : int =
+    let var i := 0
+        function isdigit(s : string) : int =
+            ord(buffer)>=ord("0") & ord(buffer)<=ord("9")
+        function skipto() =
+        while buffer=" " | buffer="\n"
+            do buffer := getchar()
+    in skipto();
+        any.any := isdigit(buffer);
+        while isdigit(buffer)
+        do (i := i*10+ord(buffer)-ord("0"); buffer := getchar());
+        i
+    end
+
+    type Node = { payload: int, left: Node, right: Node }
+    var graph := Node {payload=2,
+        left=Node {payload = 3,
+            left=Node {payload = 4, left=nil, right=nil},
+            right=Node {payload = 7, left=nil, right=nil} },
+
+        right=Node {payload=1,
+            left= Node {payload=7, left=nil, right=nil},
+            right= Node {payload = 7, left=nil, right=nil}}
+    }
+
+    function printint(i: int) =
+        let function f(i:int) = if i>0
+            then (f(i/10); print(chr(i-i/10*10+ord("0"))))
+                in if i<0 then f(-i)
+            else if i>0 then f(i)
+                else print("0")
+        end
+
+    var any := any{any=0}
+    var target := readint(any)
+
+    function printNode2(l:Node, space:int) =
+    if l <> nil then
+        (
+            space := space + 3;
+            printNode2(l.right, space);
+            for i := 3 to space do print(" ");
+            if l.payload = target then (print("*"); target:= -1);
+            printint(l.payload);
+            print("\n");
+            printNode2(l.left, space)
+        )
+
+
+in
+        printNode2(graph, 0)
+end

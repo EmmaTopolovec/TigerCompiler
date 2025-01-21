@@ -1,0 +1,7 @@
+let
+    function dog(name : string) : string = concat(name, " goes woof\n")
+    function cat(name : string) : string = concat(name, " goes meow\n")
+    function pig(name : string) : string = concat(name, " goes oink\n")
+in
+print(dog("Snoopy")); print(cat("Tom")); print(pig("Wilbur"))
+end

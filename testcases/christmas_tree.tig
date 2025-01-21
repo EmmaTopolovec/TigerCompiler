@@ -1,0 +1,51 @@
+/*
+    This class may be stressful but heres a Christmas tree!
+    This program reads in an int, and it prints a Christmas tree with that many layers
+*/
+
+let
+    type any = {any : int}
+    var buffer := getchar()
+
+    function readint(any: any) : int =
+    let var i := 0
+        function isdigit(s : string) : int =
+            ord(buffer)>=ord("0") & ord(buffer)<=ord("9")
+        function skipto() =
+        while buffer=" " | buffer="\n"
+            do buffer := getchar()
+    in skipto();
+        any.any := isdigit(buffer);
+        while isdigit(buffer)
+        do (i := i*10+ord(buffer)-ord("0"); buffer := getchar());
+        i
+    end
+
+    function tree (size : int) =
+        let
+            var thing1 := size
+        in
+        (
+            (for i2:=0 to (size - 1 ) do print(" "));
+            print("*\n");
+            for i := 0 to size-1 do (
+                (for i2:=0 to (size - i - 2) do print(" "));
+                print("/");
+                (for i2:=0 to (i * 2) do print("-"));
+                print("\\\n")
+                );
+
+            (for i2:=0 to (size - 1 ) do print(" "));
+            print("|\n");
+            print("Happy Holidays!!!"))
+
+        end
+
+ in
+    let
+        var any := any{any=0}
+        var size := readint(any)
+    in
+        tree(size)
+    end
+end

@@ -1,0 +1,20 @@
+/* solves the Towers of Hanoi problem using N disks on rods "A", "B", and "C"*/
+let
+    function printint(i: int) =
+        let function f(i:int) = if i>0 
+                then (f(i/10); print(chr(i-i/10*10+ord("0"))))
+        in if i<0 then (print("-"); f(-i))
+            else if i>0 then f(i)
+            else print("0")
+        end
+        
+    function solve_towers(n: int, begin: string, middle: string, dest: string) =
+        if n = 0 then ()
+        else (
+            solve_towers(n-1, begin, dest, middle);
+            print("Move disk "); printint(n); print(" from rod "); print(begin); print(" to rod "); print(dest); print("\n");
+            solve_towers(n-1, middle, begin, dest)
+        )
+in
+    solve_towers(3, "A", "B", "C")
+end

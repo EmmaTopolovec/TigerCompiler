@@ -1,0 +1,74 @@
+/* romantoint.tig
+ * Converts a roman numeral string into an integer
+ */
+
+let
+    function printint(i: int) =
+    let
+        function f(i:int) =
+        if i>0
+        then (f(i/10); print(chr(i-i/10*10+ord("0"))))
+    in
+        if i<0
+        then (print("-"); f(-i))
+        else if i>0
+             then f(i)
+             else print("0")
+    end
+
+    type strlist = {first: string, rest: strlist}
+    type strarr = array of string
+
+    function length (l : strlist) : int =
+    if l = nil
+    then 0
+    else 1 + length(l.rest)
+
+    function listtoarr (l : strlist) : strarr =
+    let
+	var a := strarr [length(l) + 1] of ""
+	var len := length(l)
+    in
+	for i := 0 to len - 1 do
+	    (a[i] := l.first
+	    ; l := l.rest);
+	a
+    end
+
+    function readnumerals(): strlist =
+	let
+		var c := getchar()
+	in
+		if c = "M" | c = "D" | c = "C" | c = "L" | c ="X" | c = "V" | c = "I"
+		then strlist{first=c, rest=readnumerals()}
+		else nil
+	end
+
+    function romantoint(input: strarr): int = 
+      let
+        var index := 0
+	var sum := 0
+      in
+        while input[index] <> "" do
+	let
+            var addend := if input[index] = "I" then
+                 if input[index + 1] = "V" | input[index + 1] = "X" then -1 else 1
+            else if input[index] = "V" then 5
+            else if input[index] = "X" then
+                 if input[index + 1] = "L" | input[index + 1] = "C" then -10 else 10
+            else if input[index] = "L" then 50
+            else if input[index] = "C" then
+                 if input[index + 1] = "D" | input[index + 1] = "M" then -100 else 100
+            else if input[index] = "D" then 500
+            else if input[index] = "M" then 1000
+            else 0
+	in
+	    sum := sum + addend;
+	    index := index + 1
+	end;
+	sum
+     end
+in
+   print("Enter Roman numerals: ");
+   printint(romantoint(listtoarr(readnumerals())))
+end

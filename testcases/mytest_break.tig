@@ -1,0 +1,30 @@
+/* Simple tests of break */
+
+let
+    /* Used in Test 2 */
+    var i2 := 5
+in
+    /* Test 1: Simple for */
+    for i1 := 0 to 100 do (
+        if i1 = 2 then break else print("LOOP\n")
+    );
+    print("END OF FOR\n");
+
+    /* Test 2: Simple while */
+    while i2 > 0 do (
+        if i2 = 2 then break else (i2 := i2 - 1; print("LOOP\n"))
+    );
+    print("END OF WHILE\n");
+
+    /* Test 3: Simple nested for */
+    for i3 := 0 to 3 do (
+        print("OUTER LOOP\n");
+        for i4 := 0 to 3 do (
+            print("INNER LOOP\n");
+            if i3 = 0 then break
+        );
+        print("BACK IN OUTER LOOP\n")
+        break
+    );
+    print("END OF NESTED FOR\n")
+end

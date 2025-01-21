@@ -1,0 +1,10 @@
+
+let
+    type rectype = {name:string, id: int}
+
+	var rec := rectype {name="aname", id=1}
+in
+if rec.id = 1 then print("id is 1\n") else print("id is not 1\n");
+if rec.name = "aname" then print("name is aname\n") else print("other name\n");
+if rec.name <> "bname" then print("name is not bname") else print("name is bname")
+end

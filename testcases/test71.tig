@@ -1,0 +1,14 @@
+let
+    function mut1(x : int) = (print("MUT 1\n"); mut2(x - 1))
+
+    function mut2(x :int) =
+        (print("MUT 2\n"); mut3(x - 1))
+
+    function mut3(x :int) =
+        if x > 0 then (print("MUT 3\n"); mut4(x - 1)) else (print("HERE"); mut4(x - 1))
+
+    function mut4(x :int) =
+        if x > 0 then (print("MUT 4\n"); mut1(x - 1))
+in
+mut1(10)
+end

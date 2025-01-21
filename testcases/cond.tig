@@ -1,0 +1,5 @@
+let
+    var x := 80
+in
+if (x > 50) > 0 then print("GT")
+end
